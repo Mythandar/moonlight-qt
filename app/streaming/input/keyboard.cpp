@@ -188,7 +188,6 @@ void SdlInputHandler::handleKeyEvent(SDL_KeyboardEvent* event)
     // Check for our special key combos
     if ((event->state == SDL_PRESSED) &&
             (event->keysym.mod & KMOD_CTRL) &&
-            (event->keysym.mod & KMOD_ALT) &&
             (event->keysym.mod & KMOD_SHIFT)) {
         // First we test the SDLK combos for matches,
         // that way we ensure that latin keyboard users

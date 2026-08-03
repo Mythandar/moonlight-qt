@@ -935,7 +935,7 @@
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1751"/>
-        <source>You can toggle it at any time while streaming using Ctrl+Alt+Shift+S or Select+L1+R1+X.</source>
+        <source>You can toggle it at any time while streaming using Ctrl+Shift+S or Select+L1+R1+X.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -990,7 +990,7 @@
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1320"/>
-        <source>You can toggle this while streaming using Ctrl+Alt+Shift+M.</source>
+        <source>You can toggle this while streaming using Ctrl+Shift+M.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1238,8 +1238,8 @@
     </message>
     <message>
         <location filename="../gui/StreamSegue.qml" line="169"/>
-        <source>Ctrl+Alt+Shift+Q</source>
-        <translation>Ctrl+Alt+Shift+Q</translation>
+        <source>Ctrl+Shift+Q</source>
+        <translation>Ctrl+Shift+Q</translation>
     </message>
 </context>
 <context>

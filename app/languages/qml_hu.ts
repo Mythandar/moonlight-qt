@@ -935,8 +935,8 @@
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1751"/>
-        <source>You can toggle it at any time while streaming using Ctrl+Alt+Shift+S or Select+L1+R1+X.</source>
-        <translation>Bármikor be- kikapcsolhatod streamelés közben a Ctrl+Alt+Shift+S vagy Select+L1+R1+X billentyűkkel.</translation>
+        <source>You can toggle it at any time while streaming using Ctrl+Shift+S or Select+L1+R1+X.</source>
+        <translation>Bármikor be- kikapcsolhatod streamelés közben a Ctrl+Shift+S vagy Select+L1+R1+X billentyűkkel.</translation>
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1752"/>
@@ -990,8 +990,8 @@
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1320"/>
-        <source>You can toggle this while streaming using Ctrl+Alt+Shift+M.</source>
-        <translation>Ezt streaming közben a Ctrl+Alt+Shift+M billentyűkombinációval kapcsolhatod be.</translation>
+        <source>You can toggle this while streaming using Ctrl+Shift+M.</source>
+        <translation>Ezt streaming közben a Ctrl+Shift+M billentyűkombinációval kapcsolhatod be.</translation>
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1490"/>
@@ -1238,8 +1238,8 @@
     </message>
     <message>
         <location filename="../gui/StreamSegue.qml" line="169"/>
-        <source>Ctrl+Alt+Shift+Q</source>
-        <translation>Ctrl+Alt+Shift+Q</translation>
+        <source>Ctrl+Shift+Q</source>
+        <translation>Ctrl+Shift+Q</translation>
     </message>
 </context>
 <context>

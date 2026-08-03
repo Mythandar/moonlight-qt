@@ -935,8 +935,8 @@
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1751"/>
-        <source>You can toggle it at any time while streaming using Ctrl+Alt+Shift+S or Select+L1+R1+X.</source>
-        <translation>Вы можете переключить его в любой момент во время потоковой передачи, используя Ctrl+Alt+Shift+S или Select+L1+R1+X.</translation>
+        <source>You can toggle it at any time while streaming using Ctrl+Shift+S or Select+L1+R1+X.</source>
+        <translation>Вы можете переключить его в любой момент во время потоковой передачи, используя Ctrl+Shift+S или Select+L1+R1+X.</translation>
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1752"/>
@@ -990,8 +990,8 @@
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1320"/>
-        <source>You can toggle this while streaming using Ctrl+Alt+Shift+M.</source>
-        <translation>Вы можете переключить эту настройку во время стрима нажатием Ctrl+Alt+Shift+M.</translation>
+        <source>You can toggle this while streaming using Ctrl+Shift+M.</source>
+        <translation>Вы можете переключить эту настройку во время стрима нажатием Ctrl+Shift+M.</translation>
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1490"/>
@@ -1124,7 +1124,7 @@
     <message>
         <location filename="../gui/SettingsView.qml" line="980"/>
         <source>This will close the app or game you are streaming when you end your stream. You will lose any unsaved progress!</source>
-        <translation>Это выйдет из игры или приложения при закрытии окна Moonlight или нажатии Ctrl+Alt+Shift+Q. Несохранённый прогресс будет утерян!</translation>
+        <translation>Это выйдет из игры или приложения при закрытии окна Moonlight или нажатии Ctrl+Shift+Q. Несохранённый прогресс будет утерян!</translation>
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1531"/>
@@ -1238,8 +1238,8 @@
     </message>
     <message>
         <location filename="../gui/StreamSegue.qml" line="169"/>
-        <source>Ctrl+Alt+Shift+Q</source>
-        <translation>Ctrl+Alt+Shift+Q</translation>
+        <source>Ctrl+Shift+Q</source>
+        <translation>Ctrl+Shift+Q</translation>
     </message>
 </context>
 <context>

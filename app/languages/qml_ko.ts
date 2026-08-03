@@ -935,8 +935,8 @@
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1751"/>
-        <source>You can toggle it at any time while streaming using Ctrl+Alt+Shift+S or Select+L1+R1+X.</source>
-        <translation>스트리밍 중 Ctrl+Alt+Shift+S 또는 Select+L1+R1+X를 입력하여 변경할 수 있습니다.</translation>
+        <source>You can toggle it at any time while streaming using Ctrl+Shift+S or Select+L1+R1+X.</source>
+        <translation>스트리밍 중 Ctrl+Shift+S 또는 Select+L1+R1+X를 입력하여 변경할 수 있습니다.</translation>
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1752"/>
@@ -990,8 +990,8 @@
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1320"/>
-        <source>You can toggle this while streaming using Ctrl+Alt+Shift+M.</source>
-        <translation>스트리밍 중에 Ctrl+Alt+Shift+M을 사용하여 전환 할 수 있습니다.</translation>
+        <source>You can toggle this while streaming using Ctrl+Shift+M.</source>
+        <translation>스트리밍 중에 Ctrl+Shift+M을 사용하여 전환 할 수 있습니다.</translation>
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1490"/>
@@ -1238,8 +1238,8 @@
     </message>
     <message>
         <location filename="../gui/StreamSegue.qml" line="169"/>
-        <source>Ctrl+Alt+Shift+Q</source>
-        <translation>Ctrl+Alt+Shift+Q</translation>
+        <source>Ctrl+Shift+Q</source>
+        <translation>Ctrl+Shift+Q</translation>
     </message>
 </context>
 <context>
