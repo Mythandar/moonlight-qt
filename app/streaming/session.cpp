@@ -1365,9 +1365,13 @@ void Session::getWindowDimensions(int& x, int& y,
 
     SDL_Rect usableBounds;
     if (SDL_GetDisplayUsableBounds(displayIndex, &usableBounds) == 0) {
-        // If the stream resolution fits within the usable display area, use it directly
-        if (m_StreamConfig.width <= usableBounds.w &&
-            m_StreamConfig.height <= usableBounds.h) {
+        // If the stream resolution fits within the usable display area with room
+        // for window decorations, use it directly. An exact fit would create a
+        // window whose client area fills the display, making windowed mode look
+        // identical to borderless fullscreen and leaving no visible size change
+        // when toggling between the two modes.
+        if (m_StreamConfig.width < usableBounds.w &&
+            m_StreamConfig.height < usableBounds.h) {
             width = m_StreamConfig.width;
             height = m_StreamConfig.height;
         } else {
