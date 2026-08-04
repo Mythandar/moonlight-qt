@@ -1507,18 +1507,31 @@ void Session::toggleFullscreen()
     bool fullScreen = !(SDL_GetWindowFlags(m_Window) & m_FullScreenFlag);
 
 #if defined(Q_OS_WIN32) || defined(Q_OS_DARWIN)
-    // Destroy the video decoder before toggling full-screen because D3D9 can try
-    // to put the window back into full-screen before we've managed to destroy
-    // the renderer. This leads to excessive flickering and can cause the window
-    // decorations to get messed up as SDL and D3D9 fight over the window style.
-    //
-    // On Apple Silicon Macs, the AVSampleBufferDisplayLayer may cause WindowServer
-    // to deadlock when transitioning out of fullscreen. Destroy the decoder before
-    // exiting fullscreen as a workaround. See issue #973.
-    SDL_LockMutex(m_DecoderLock);
-    delete m_VideoDecoder;
-    m_VideoDecoder = nullptr;
-    SDL_UnlockMutex(m_DecoderLock);
+    bool recreateDecoderBeforeToggle = true;
+
+#ifdef Q_OS_WIN32
+    // Borderless fullscreen does not require the D3D9 workaround below. Keeping
+    // the decoder alive is also essential when the window is already maximized:
+    // SDL may not emit SDL_WINDOWEVENT_SIZE_CHANGED if the dimensions don't
+    // change, which would otherwise leave us permanently without a decoder.
+    recreateDecoderBeforeToggle = m_FullScreenFlag == SDL_WINDOW_FULLSCREEN;
+#endif
+
+    if (recreateDecoderBeforeToggle) {
+        // Destroy the video decoder before toggling exclusive full-screen because
+        // D3D9 can try to put the window back into full-screen before we've managed
+        // to destroy the renderer. This leads to excessive flickering and can cause
+        // the window decorations to get messed up as SDL and D3D9 fight over the
+        // window style.
+        //
+        // On Apple Silicon Macs, the AVSampleBufferDisplayLayer may cause WindowServer
+        // to deadlock when transitioning out of fullscreen. Destroy the decoder before
+        // exiting fullscreen as a workaround. See issue #973.
+        SDL_LockMutex(m_DecoderLock);
+        delete m_VideoDecoder;
+        m_VideoDecoder = nullptr;
+        SDL_UnlockMutex(m_DecoderLock);
+    }
 #endif
 
     // Actually enter/leave fullscreen

@@ -1248,6 +1248,19 @@ Flickable {
                     // ::onActivated must be used, as it only listens for when the index is changed by a human
                     onActivated : {
                         StreamingPreferences.uiDisplayMode = uiDisplayModeListModel.get(currentIndex).val
+
+                        // Apply the selected state immediately. In particular,
+                        // choosing Windowed must clear an existing maximized or
+                        // fullscreen state rather than merely saving the preference.
+                        if (StreamingPreferences.uiDisplayMode === StreamingPreferences.UI_WINDOWED) {
+                            window.showNormal()
+                        }
+                        else if (StreamingPreferences.uiDisplayMode === StreamingPreferences.UI_MAXIMIZED) {
+                            window.showMaximized()
+                        }
+                        else {
+                            window.showFullScreen()
+                        }
                     }
                 }
 
