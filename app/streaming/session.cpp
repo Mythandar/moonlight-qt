@@ -1365,9 +1365,13 @@ void Session::getWindowDimensions(int& x, int& y,
 
     SDL_Rect usableBounds;
     if (SDL_GetDisplayUsableBounds(displayIndex, &usableBounds) == 0) {
-        // If the stream resolution fits within the usable display area, use it directly
-        if (m_StreamConfig.width <= usableBounds.w &&
-            m_StreamConfig.height <= usableBounds.h) {
+        // If the stream resolution fits within the usable display area with room
+        // for window decorations, use it directly. An exact fit would create a
+        // window whose client area fills the display, making windowed mode look
+        // identical to borderless fullscreen and leaving no visible size change
+        // when toggling between the two modes.
+        if (m_StreamConfig.width < usableBounds.w &&
+            m_StreamConfig.height < usableBounds.h) {
             width = m_StreamConfig.width;
             height = m_StreamConfig.height;
         } else {
@@ -1507,22 +1511,40 @@ void Session::toggleFullscreen()
     bool fullScreen = !(SDL_GetWindowFlags(m_Window) & m_FullScreenFlag);
 
 #if defined(Q_OS_WIN32) || defined(Q_OS_DARWIN)
-    // Destroy the video decoder before toggling full-screen because D3D9 can try
-    // to put the window back into full-screen before we've managed to destroy
-    // the renderer. This leads to excessive flickering and can cause the window
-    // decorations to get messed up as SDL and D3D9 fight over the window style.
-    //
-    // On Apple Silicon Macs, the AVSampleBufferDisplayLayer may cause WindowServer
-    // to deadlock when transitioning out of fullscreen. Destroy the decoder before
-    // exiting fullscreen as a workaround. See issue #973.
-    SDL_LockMutex(m_DecoderLock);
-    delete m_VideoDecoder;
-    m_VideoDecoder = nullptr;
-    SDL_UnlockMutex(m_DecoderLock);
+    bool recreateDecoderBeforeToggle = true;
+
+#ifdef Q_OS_WIN32
+    // Borderless fullscreen does not require the D3D9 workaround below. Keeping
+    // the decoder alive is also essential when the window is already maximized:
+    // SDL may not emit SDL_WINDOWEVENT_SIZE_CHANGED if the dimensions don't
+    // change, which would otherwise leave us permanently without a decoder.
+    recreateDecoderBeforeToggle = m_FullScreenFlag == SDL_WINDOW_FULLSCREEN;
+#endif
+
+    if (recreateDecoderBeforeToggle) {
+        // Destroy the video decoder before toggling exclusive full-screen because
+        // D3D9 can try to put the window back into full-screen before we've managed
+        // to destroy the renderer. This leads to excessive flickering and can cause
+        // the window decorations to get messed up as SDL and D3D9 fight over the
+        // window style.
+        //
+        // On Apple Silicon Macs, the AVSampleBufferDisplayLayer may cause WindowServer
+        // to deadlock when transitioning out of fullscreen. Destroy the decoder before
+        // exiting fullscreen as a workaround. See issue #973.
+        SDL_LockMutex(m_DecoderLock);
+        delete m_VideoDecoder;
+        m_VideoDecoder = nullptr;
+        SDL_UnlockMutex(m_DecoderLock);
+    }
 #endif
 
     // Actually enter/leave fullscreen
     SDL_SetWindowFullscreen(m_Window, fullScreen ? m_FullScreenFlag : 0);
+
+    // Use captured relative mouse input in full-screen mode and seamless
+    // absolute mouse input in windowed mode. This mirrors the modes selected
+    // by the mouse mode shortcut without relying on its current toggle state.
+    m_InputHandler->setAbsoluteMouseMode(!fullScreen);
 
 #ifdef Q_OS_DARWIN
     // SDL on macOS has a bug that causes the window size to be reset to crazy

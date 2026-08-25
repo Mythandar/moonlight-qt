@@ -935,8 +935,8 @@
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1751"/>
-        <source>You can toggle it at any time while streaming using Ctrl+Alt+Shift+S or Select+L1+R1+X.</source>
-        <translation>Ctrl+Alt+Shift+S ஐப் பயன்படுத்தி ச்ட்ரீமிங் செய்யும் போது எந்த நேரத்திலும் அதை மாற்றலாம் அல்லது+L1+R1+X ஐத் தேர்ந்தெடுக்கலாம்.</translation>
+        <source>You can toggle it at any time while streaming using Ctrl+Shift+S or Select+L1+R1+X.</source>
+        <translation>Ctrl+Shift+S ஐப் பயன்படுத்தி ச்ட்ரீமிங் செய்யும் போது எந்த நேரத்திலும் அதை மாற்றலாம் அல்லது+L1+R1+X ஐத் தேர்ந்தெடுக்கலாம்.</translation>
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1752"/>
@@ -990,8 +990,8 @@
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1320"/>
-        <source>You can toggle this while streaming using Ctrl+Alt+Shift+M.</source>
-        <translation>Ctrl+Alt+Shift+M ஐப் பயன்படுத்தி ச்ட்ரீமிங் செய்யும் போது இதை மாற்றலாம்.</translation>
+        <source>You can toggle this while streaming using Ctrl+Shift+M.</source>
+        <translation>Ctrl+Shift+M ஐப் பயன்படுத்தி ச்ட்ரீமிங் செய்யும் போது இதை மாற்றலாம்.</translation>
     </message>
     <message>
         <location filename="../gui/SettingsView.qml" line="1490"/>
@@ -1238,8 +1238,8 @@
     </message>
     <message>
         <location filename="../gui/StreamSegue.qml" line="169"/>
-        <source>Ctrl+Alt+Shift+Q</source>
-        <translation>Ctrl+alt+shift+q</translation>
+        <source>Ctrl+Shift+Q</source>
+        <translation>Ctrl+shift+q</translation>
     </message>
 </context>
 <context>

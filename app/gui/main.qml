@@ -44,7 +44,10 @@ ApplicationWindow {
                 window.showFullScreen()
             }
             else {
-                window.show()
+                // Explicitly clear any maximized/fullscreen state retained by Qt.
+                // A plain show() preserves that state and can cause a windowed
+                // stream to inherit maximized dimensions from the GUI.
+                window.showNormal()
             }
         } else {
             window.showFullScreen()

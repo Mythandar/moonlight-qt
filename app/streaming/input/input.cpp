@@ -91,8 +91,8 @@ SdlInputHandler::SdlInputHandler(StreamingPreferences& prefs, int streamWidth, i
     m_SpecialKeyCombos[KeyComboUngrabInput].enabled = WMUtils::isRunningDesktopEnvironment();
 
     m_SpecialKeyCombos[KeyComboToggleFullScreen].keyCombo = KeyComboToggleFullScreen;
-    m_SpecialKeyCombos[KeyComboToggleFullScreen].keyCode = SDLK_x;
-    m_SpecialKeyCombos[KeyComboToggleFullScreen].scanCode = SDL_SCANCODE_X;
+    m_SpecialKeyCombos[KeyComboToggleFullScreen].keyCode = SDLK_w;
+    m_SpecialKeyCombos[KeyComboToggleFullScreen].scanCode = SDL_SCANCODE_W;
     m_SpecialKeyCombos[KeyComboToggleFullScreen].enabled = WMUtils::isRunningDesktopEnvironment();
 
     m_SpecialKeyCombos[KeyComboToggleStatsOverlay].keyCombo = KeyComboToggleStatsOverlay;
@@ -441,6 +441,15 @@ void SdlInputHandler::setCaptureActive(bool active)
 
     // Now update the keyboard grab
     updateKeyboardGrabState();
+}
+
+void SdlInputHandler::setAbsoluteMouseMode(bool absoluteMouseMode)
+{
+    // Mouse capture must be reset when switching between relative and absolute
+    // modes so SDL can apply the appropriate capture behavior for the new mode.
+    setCaptureActive(false);
+    m_AbsoluteMouseMode = absoluteMouseMode;
+    setCaptureActive(true);
 }
 
 void SdlInputHandler::handleTouchFingerEvent(SDL_TouchFingerEvent* event)
