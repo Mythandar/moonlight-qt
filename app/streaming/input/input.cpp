@@ -443,6 +443,15 @@ void SdlInputHandler::setCaptureActive(bool active)
     updateKeyboardGrabState();
 }
 
+void SdlInputHandler::setAbsoluteMouseMode(bool absoluteMouseMode)
+{
+    // Mouse capture must be reset when switching between relative and absolute
+    // modes so SDL can apply the appropriate capture behavior for the new mode.
+    setCaptureActive(false);
+    m_AbsoluteMouseMode = absoluteMouseMode;
+    setCaptureActive(true);
+}
+
 void SdlInputHandler::handleTouchFingerEvent(SDL_TouchFingerEvent* event)
 {
 #if SDL_VERSION_ATLEAST(2, 0, 10)

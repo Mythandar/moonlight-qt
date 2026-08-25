@@ -1541,6 +1541,11 @@ void Session::toggleFullscreen()
     // Actually enter/leave fullscreen
     SDL_SetWindowFullscreen(m_Window, fullScreen ? m_FullScreenFlag : 0);
 
+    // Use captured relative mouse input in full-screen mode and seamless
+    // absolute mouse input in windowed mode. This mirrors the modes selected
+    // by the mouse mode shortcut without relying on its current toggle state.
+    m_InputHandler->setAbsoluteMouseMode(!fullScreen);
+
 #ifdef Q_OS_DARWIN
     // SDL on macOS has a bug that causes the window size to be reset to crazy
     // large dimensions when exiting out of true fullscreen mode. We can work

@@ -146,6 +146,8 @@ public:
 
     void setCaptureActive(bool active);
 
+    void setAbsoluteMouseMode(bool absoluteMouseMode);
+
     bool isMouseInVideoRegion(int mouseX, int mouseY, int windowWidth = -1, int windowHeight = -1);
 
     void updateKeyboardGrabState();
