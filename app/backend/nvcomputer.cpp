@@ -64,7 +64,6 @@ NvComputer::NvComputer(QSettings& settings)
     this->isSupportedServerVersion = true;
     this->serverPermissionsAvailable = false;
     this->serverPermissions = 0;
-    this->virtualDisplayCapable = false;
     this->externalPort = this->remoteAddress.port();
     this->activeHttpsPort = 0;
 }
@@ -224,10 +223,6 @@ NvComputer::NvComputer(NvHTTP& http, QString serverInfo)
         this->serverPermissions = 0;
     }
     this->serverCommands = NvHTTP::getXmlStringList(serverInfo, "ServerCommand");
-    const QString virtualDisplayValue =
-            NvHTTP::getXmlString(serverInfo, "VirtualDisplayCapable").trimmed();
-    this->virtualDisplayCapable = virtualDisplayValue == "1" ||
-            virtualDisplayValue.compare(QStringLiteral("true"), Qt::CaseInsensitive) == 0;
 }
 
 bool NvComputer::wake() const
@@ -589,7 +584,6 @@ bool NvComputer::update(const NvComputer& that)
     ASSIGN_IF_CHANGED(serverPermissionsAvailable);
     ASSIGN_IF_CHANGED(serverPermissions);
     ASSIGN_IF_CHANGED(serverCommands);
-    ASSIGN_IF_CHANGED(virtualDisplayCapable);
     ASSIGN_IF_CHANGED_AND_NONNULL(serverCert);
     ASSIGN_IF_CHANGED_AND_NONEMPTY(displayModes);
 

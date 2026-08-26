@@ -103,7 +103,6 @@ public:
     bool serverPermissionsAvailable = false;
     quint32 serverPermissions = 0;
     QStringList serverCommands;
-    bool virtualDisplayCapable = false;
 
     // Persisted traits
     NvAddress localAddress;

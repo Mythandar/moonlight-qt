@@ -1657,7 +1657,7 @@ bool Session::startConnectionAsync()
                       m_Preferences->playAudioOnHost,
                       m_InputHandler->getAttachedGamepadMask(),
                       !m_Preferences->multiController,
-                      m_Preferences->useVirtualDisplay && m_Computer->virtualDisplayCapable,
+                      m_Preferences->useVirtualDisplay,
                       rtspSessionUrl);
     } catch (const GfeHttpResponseException& e) {
         emit displayLaunchError(tr("Host returned error: %1").arg(e.toQString()));
