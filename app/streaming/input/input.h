@@ -148,6 +148,10 @@ public:
 
     void setAbsoluteMouseMode(bool absoluteMouseMode);
 
+    void toggleCaptureActive();
+
+    void toggleSystemKeyCapture();
+
     bool isMouseInVideoRegion(int mouseX, int mouseY, int windowWidth = -1, int windowHeight = -1);
 
     void updateKeyboardGrabState();
@@ -170,6 +174,7 @@ private:
         KeyComboTogglePointerRegionLock,
         KeyComboQuitAndExit,
         KeyComboToggleKeyboardGrab,
+        KeyComboToggleQuickMenu,
         KeyComboMax
     };
 

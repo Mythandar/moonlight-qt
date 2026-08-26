@@ -177,6 +177,10 @@ SOURCES += \
     backend/nvpairingmanager.cpp \
     backend/computermanager.cpp \
     backend/boxartmanager.cpp \
+    backend/clipboardmanager.cpp \
+    backend/serverpermissions.cpp \
+    backend/servercommandmanager.cpp \
+    backend/quickmenumanager.cpp \
     backend/richpresencemanager.cpp \
     cli/commandlineparser.cpp \
     cli/listapps.cpp \
@@ -221,6 +225,10 @@ HEADERS += \
     backend/nvpairingmanager.h \
     backend/computermanager.h \
     backend/boxartmanager.h \
+    backend/clipboardmanager.h \
+    backend/serverpermissions.h \
+    backend/servercommandmanager.h \
+    backend/quickmenumanager.h \
     backend/richpresencemanager.h \
     cli/commandlineparser.h \
     cli/listapps.h \

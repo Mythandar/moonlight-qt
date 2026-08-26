@@ -2,6 +2,9 @@
 #include "settings/streamingpreferences.h"
 #include "streaming/streamutils.h"
 #include "backend/richpresencemanager.h"
+#include "backend/clipboardmanager.h"
+#include "backend/quickmenumanager.h"
+#include "backend/servercommandmanager.h"
 
 #include <Limelight.h>
 #include "SDL_compat.h"
@@ -584,7 +587,12 @@ Session::Session(NvComputer* computer, NvApp& app, StreamingPreferences *prefere
       m_OpusDecoder(nullptr),
       m_AudioRenderer(nullptr),
       m_AudioSampleCount(0),
-      m_DropAudioEndTime(0)
+      m_DropAudioEndTime(0),
+      m_ServerCommandManager(new ServerCommandManager(m_Computer)),
+      m_ClipboardManager(m_Preferences->clipboardSync ?
+                             new ClipboardManager(m_Computer, this) : nullptr),
+      m_QuickMenuManager(new QuickMenuManager(this, m_ServerCommandManager,
+                                              m_ClipboardManager))
 {
 }
 
@@ -594,6 +602,15 @@ Session::~Session()
     // Use Session::exec() or DeferredSessionCleanupTask instead.
 
     SDL_DestroyMutex(m_DecoderLock);
+    delete m_QuickMenuManager;
+    delete m_ServerCommandManager;
+}
+
+void Session::toggleQuickMenu()
+{
+    if (m_QuickMenuManager != nullptr) {
+        m_QuickMenuManager->toggle();
+    }
 }
 
 bool Session::initialize(QQuickWindow* qtWindow)
@@ -1640,6 +1657,7 @@ bool Session::startConnectionAsync()
                       m_Preferences->playAudioOnHost,
                       m_InputHandler->getAttachedGamepadMask(),
                       !m_Preferences->multiController,
+                      m_Preferences->useVirtualDisplay && m_Computer->virtualDisplayCapable,
                       rtspSessionUrl);
     } catch (const GfeHttpResponseException& e) {
         emit displayLaunchError(tr("Host returned error: %1").arg(e.toQString()));
@@ -1976,6 +1994,10 @@ void Session::exec()
     // Start rich presence to indicate we're in game
     RichPresenceManager presence(*m_Preferences, m_App.name);
 
+    if (m_ClipboardManager != nullptr) {
+        m_ClipboardManager->onStreamStarted();
+    }
+
     // Toggle the stats overlay if requested by the user
     m_OverlayManager.setOverlayState(Overlay::OverlayDebug, m_Preferences->showPerformanceOverlay);
 
@@ -1998,6 +2020,7 @@ void Session::exec()
         // and other problems.
         if (!SDL_WaitEventTimeout(&event, 1000)) {
             presence.runCallbacks();
+            m_QuickMenuManager->tick();
             continue;
         }
 #else
@@ -2014,9 +2037,15 @@ void Session::exec()
             SDL_Delay(10);
 #endif
             presence.runCallbacks();
+            m_QuickMenuManager->tick();
             continue;
         }
 #endif
+        m_QuickMenuManager->tick();
+        if (m_QuickMenuManager->handleEvent(event)) {
+            presence.runCallbacks();
+            continue;
+        }
         switch (event.type) {
         case SDL_QUIT:
             SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
@@ -2063,6 +2092,12 @@ void Session::exec()
             }
             break;
 
+        case SDL_CLIPBOARDUPDATE:
+            if (m_ClipboardManager != nullptr) {
+                m_ClipboardManager->onLocalClipboardChanged();
+            }
+            break;
+
         case SDL_WINDOWEVENT:
             // Early handling of some events
             switch (event.window.event) {
@@ -2071,6 +2106,9 @@ void Session::exec()
                     m_AudioMuted = true;
                 }
                 m_InputHandler->notifyFocusLost();
+                if (m_ClipboardManager != nullptr) {
+                    m_ClipboardManager->onFocusLost();
+                }
                 break;
             case SDL_WINDOWEVENT_FOCUS_GAINED:
                 if (m_Preferences->muteOnFocusLoss) {
@@ -2330,6 +2368,11 @@ void Session::exec()
     }
 
 DispatchDeferredCleanup:
+    m_QuickMenuManager->hide();
+    if (m_ClipboardManager != nullptr) {
+        m_ClipboardManager->onStreamStopped();
+    }
+
     // Switch back to synchronous logging mode
     StreamUtils::exitAsyncLoggingMode();
 

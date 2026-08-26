@@ -32,11 +32,7 @@ void SdlInputHandler::performSpecialKeyCombo(KeyCombo combo)
                     "Detected mouse capture toggle combo");
 
         // Stop handling future input
-        setCaptureActive(!isCaptureActive());
-
-        // Force raise all keys to ensure they aren't stuck,
-        // since we won't get their key up events.
-        raiseAllKeys();
+        toggleCaptureActive();
         break;
 
     case KeyComboToggleFullScreen:
@@ -151,20 +147,35 @@ void SdlInputHandler::performSpecialKeyCombo(KeyCombo combo)
         SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
                     "Detected keyboard grab toggle combo");
 
-        // Toggle the system key capture mode
-        if (isSystemKeyCaptureActive()) {
-            m_CaptureSystemKeysMode = StreamingPreferences::CSK_OFF;
-        }
-        else {
-            m_CaptureSystemKeysMode = StreamingPreferences::CSK_ALWAYS;
-        }
+        toggleSystemKeyCapture();
+        break;
 
-        updateKeyboardGrabState();
+    case KeyComboToggleQuickMenu:
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
+                    "Detected quick menu toggle combo");
+        Session::get()->toggleQuickMenu();
         break;
 
     default:
         Q_UNREACHABLE();
     }
+}
+
+void SdlInputHandler::toggleCaptureActive()
+{
+    setCaptureActive(!isCaptureActive());
+    raiseAllKeys();
+}
+
+void SdlInputHandler::toggleSystemKeyCapture()
+{
+    if (isSystemKeyCaptureActive()) {
+        m_CaptureSystemKeysMode = StreamingPreferences::CSK_OFF;
+    }
+    else {
+        m_CaptureSystemKeysMode = StreamingPreferences::CSK_ALWAYS;
+    }
+    updateKeyboardGrabState();
 }
 
 void SdlInputHandler::handleKeyEvent(SDL_KeyboardEvent* event)

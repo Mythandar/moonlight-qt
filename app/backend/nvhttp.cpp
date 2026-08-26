@@ -11,6 +11,7 @@
 #include <QImageReader>
 #include <QtEndian>
 #include <QNetworkProxy>
+#include <QNetworkRequest>
 
 #define FAST_FAIL_TIMEOUT_MS 2000
 #define REQUEST_TIMEOUT_MS 5000
@@ -205,6 +206,7 @@ NvHTTP::startApp(QString verb,
                  bool localAudio,
                  int gamepadMask,
                  bool persistGameControllersOnDisconnect,
+                 bool useVirtualDisplay,
                  QString& rtspSessionUrl)
 {
     int riKeyId;
@@ -234,6 +236,7 @@ NvHTTP::startApp(QString verb,
                                    "&remoteControllersBitmap="+QString::number(gamepadMask)+
                                    "&gcmap="+QString::number(gamepadMask)+
                                    "&gcpersist="+QString::number(persistGameControllersOnDisconnect ? 1 : 0)+
+                                   (useVirtualDisplay ? "&virtualDisplay=1" : "")+
                                    LiGetLaunchUrlQueryParameters(),
                                    LAUNCH_TIMEOUT_MS);
 
@@ -403,6 +406,85 @@ NvHTTP::getBoxArt(int appId)
     return image;
 }
 
+bool
+NvHTTP::getClipboardContent(QString& content)
+{
+    try {
+        content = openConnectionToString(m_BaseUrlHttps,
+                                         "actions/clipboard",
+                                         "type=text",
+                                         REQUEST_TIMEOUT_MS,
+                                         NvLogLevel::NVLL_ERROR);
+        return true;
+    }
+    catch (const GfeHttpResponseException& e) {
+        qWarning() << "Clipboard read request failed:" << e.toQString();
+    }
+    catch (const QtNetworkReplyException& e) {
+        qWarning() << "Clipboard read request failed:" << e.toQString();
+    }
+
+    content.clear();
+    return false;
+}
+
+bool
+NvHTTP::sendClipboardContent(const QString& content)
+{
+    QUrl url(m_BaseUrlHttps);
+    url.setPath("/actions/clipboard");
+    url.setQuery("type=text");
+
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader,
+                      "text/plain; charset=utf-8");
+    request.setSslConfiguration(IdentityManager::get()->getSslConfig());
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    request.setAttribute(QNetworkRequest::Http2AllowedAttribute, false);
+#endif
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 3, 0)
+    request.setAttribute(QNetworkRequest::ConnectionCacheExpiryTimeoutSecondsAttribute, 0);
+#endif
+
+    auto sslErrorsConnection = connect(m_Nam, &QNetworkAccessManager::sslErrors,
+                                       this, &NvHTTP::handleSslErrors);
+    QNetworkReply* reply = m_Nam->post(request, content.toUtf8());
+
+    QEventLoop loop;
+    connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+    connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit,
+            &loop, &QEventLoop::quit);
+    QTimer::singleShot(REQUEST_TIMEOUT_MS, &loop, &QEventLoop::quit);
+    loop.exec(QEventLoop::ExcludeUserInputEvents);
+
+    if (!reply->isFinished()) {
+        qWarning() << "Aborting timed out clipboard write request";
+        reply->abort();
+    }
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 3, 0)
+    m_Nam->clearAccessCache();
+#endif
+    disconnect(sslErrorsConnection);
+
+    bool success = false;
+    if (reply->error() != QNetworkReply::NoError) {
+        qWarning() << "Clipboard write request failed:" << reply->errorString();
+    }
+    else {
+        const int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        success = statusCode >= 200 && statusCode < 300;
+        if (!success) {
+            qWarning() << "Clipboard write request returned HTTP status" << statusCode;
+        }
+    }
+
+    delete reply;
+    return success;
+}
+
 QByteArray
 NvHTTP::getXmlStringFromHex(QString xml,
                             QString tagName)
@@ -430,6 +512,23 @@ NvHTTP::getXmlString(QString xml,
     }
 
     return QString();
+}
+
+QStringList
+NvHTTP::getXmlStringList(QString xml,
+                         QString tagName)
+{
+    QXmlStreamReader xmlReader(xml);
+    QStringList values;
+
+    while (!xmlReader.atEnd()) {
+        if (xmlReader.readNext() == QXmlStreamReader::StartElement &&
+                xmlReader.name() == tagName) {
+            values.append(xmlReader.readElementText());
+        }
+    }
+
+    return values;
 }
 
 void NvHTTP::handleSslErrors(QNetworkReply* reply, const QList<QSslError>& errors)

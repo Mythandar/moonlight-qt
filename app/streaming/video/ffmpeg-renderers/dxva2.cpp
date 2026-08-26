@@ -668,6 +668,11 @@ void DXVA2Renderer::notifyOverlayUpdated(Overlay::OverlayType type)
         renderRect.x = 0;
         renderRect.y = 0;
     }
+    else if (type == Overlay::OverlayQuickMenu) {
+        // Center
+        renderRect.x = SDL_max(0, (m_DisplayWidth - newSurface->w) / 2);
+        renderRect.y = SDL_max(0, (m_DisplayHeight - newSurface->h) / 2);
+    }
 
     renderRect.w = newSurface->w;
     renderRect.h = newSurface->h;

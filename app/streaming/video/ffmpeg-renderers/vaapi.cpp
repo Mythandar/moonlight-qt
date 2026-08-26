@@ -763,6 +763,11 @@ void VAAPIRenderer::notifyOverlayUpdated(Overlay::OverlayType type)
             overlayRect.x = 0;
             overlayRect.y = 0;
         }
+        else if (type == Overlay::OverlayQuickMenu) {
+            // Center
+            overlayRect.x = SDL_max(0, (m_DisplayWidth - newSurface->w) / 2);
+            overlayRect.y = SDL_max(0, (m_DisplayHeight - newSurface->h) / 2);
+        }
 
         overlayRect.w = newSurface->w;
         overlayRect.h = newSurface->h;

@@ -1173,6 +1173,11 @@ bool D3D11VARenderer::createOverlayVertexBuffer(Overlay::OverlayType type, int w
         renderRect.x = 0;
         renderRect.y = m_DisplayHeight - height;
     }
+    else if (type == Overlay::OverlayQuickMenu) {
+        // Center
+        renderRect.x = SDL_max(0, (m_DisplayWidth - width) / 2);
+        renderRect.y = SDL_max(0, (m_DisplayHeight - height) / 2);
+    }
 
     renderRect.w = width;
     renderRect.h = height;

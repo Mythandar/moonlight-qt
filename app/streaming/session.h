@@ -89,6 +89,10 @@ public:
     }
 };
 
+class ClipboardManager;
+class QuickMenuManager;
+class ServerCommandManager;
+
 class Session : public QObject
 {
     Q_OBJECT
@@ -96,6 +100,7 @@ class Session : public QObject
     friend class SdlInputHandler;
     friend class DeferredSessionCleanupTask;
     friend class AsyncConnectionStartThread;
+    friend class QuickMenuManager;
 
 public:
     explicit Session(NvComputer* computer, NvApp& app, StreamingPreferences *preferences = nullptr);
@@ -124,6 +129,8 @@ public:
     void flushWindowEvents();
 
     void setShouldExit(bool quitHostApp = false);
+
+    void toggleQuickMenu();
 
 signals:
     void stageStarting(QString stage);
@@ -281,6 +288,9 @@ private:
     Uint32 m_DropAudioEndTime;
 
     Overlay::OverlayManager m_OverlayManager;
+    ServerCommandManager* m_ServerCommandManager;
+    ClipboardManager* m_ClipboardManager;
+    QuickMenuManager* m_QuickMenuManager;
 
     static CONNECTION_LISTENER_CALLBACKS k_ConnCallbacks;
     static Session* s_ActiveSession;

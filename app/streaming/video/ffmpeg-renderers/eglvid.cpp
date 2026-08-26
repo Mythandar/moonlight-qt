@@ -213,7 +213,13 @@ void EGLRenderer::renderOverlay(Overlay::OverlayType type, int viewportWidth, in
             // Top left
             overlayRect.x = 0;
             overlayRect.y = viewportHeight - newSurface->h;
-        } else {
+        }
+        else if (type == Overlay::OverlayQuickMenu) {
+            // Center (OpenGL uses a lower-left origin)
+            overlayRect.x = SDL_max(0, (viewportWidth - newSurface->w) / 2);
+            overlayRect.y = SDL_max(0, (viewportHeight - newSurface->h) / 2);
+        }
+        else {
             SDL_assert(false);
         }
 

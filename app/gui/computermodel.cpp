@@ -1,4 +1,5 @@
 #include "computermodel.h"
+#include "backend/serverpermissions.h"
 
 #include <QThreadPool>
 
@@ -69,7 +70,7 @@ QVariant ComputerModel::data(const QModelIndex& index, int role) const
             break;
         }
 
-        return tr("Name: %1").arg(computer->name) + '\n' +
+        QString details = tr("Name: %1").arg(computer->name) + '\n' +
                tr("Status: %1").arg(state) + '\n' +
                tr("Active Address: %1").arg(computer->activeAddress.toString()) + '\n' +
                tr("UUID: %1").arg(computer->uuid) + '\n' +
@@ -81,6 +82,13 @@ QVariant ComputerModel::data(const QModelIndex& index, int role) const
                tr("Pair State: %1").arg(pairState) + '\n' +
                tr("Running Game ID: %1").arg(computer->state == NvComputer::CS_ONLINE ? QString::number(computer->currentGameId) : tr("Unknown")) + '\n' +
                tr("HTTPS Port: %1").arg(computer->state == NvComputer::CS_ONLINE ? QString::number(computer->activeHttpsPort) : tr("Unknown"));
+
+        if (computer->serverPermissionsAvailable) {
+            details += "\n\n" + tr("Server Permissions (0x%1):")
+                    .arg(computer->serverPermissions, 8, 16, QLatin1Char('0')) + '\n' +
+                    ServerPermissions::formatDetailed(computer->serverPermissions);
+        }
+        return details;
     }
     default:
         return QVariant();

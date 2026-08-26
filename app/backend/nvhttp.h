@@ -130,6 +130,11 @@ public:
                  QString tagName);
 
     static
+    QStringList
+    getXmlStringList(QString xml,
+                     QString tagName);
+
+    static
     QByteArray
     getXmlStringFromHex(QString xml,
                         QString tagName);
@@ -170,6 +175,7 @@ public:
              bool localAudio,
              int gamepadMask,
              bool persistGameControllersOnDisconnect,
+             bool useVirtualDisplay,
              QString& rtspSessionUrl);
 
     QVector<NvApp>
@@ -177,6 +183,12 @@ public:
 
     QImage
     getBoxArt(int appId);
+
+    bool
+    getClipboardContent(QString& content);
+
+    bool
+    sendClipboardContent(const QString& content);
 
     static
     QVector<NvDisplayMode>

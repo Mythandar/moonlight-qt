@@ -1,5 +1,6 @@
 #include "nvcomputer.h"
 #include "nvapp.h"
+#include "serverpermissions.h"
 #include "settings/compatfetcher.h"
 
 #include <QUdpSocket>
@@ -61,6 +62,9 @@ NvComputer::NvComputer(QSettings& settings)
     this->pendingQuit = false;
     this->gpuModel = nullptr;
     this->isSupportedServerVersion = true;
+    this->serverPermissionsAvailable = false;
+    this->serverPermissions = 0;
+    this->virtualDisplayCapable = false;
     this->externalPort = this->remoteAddress.port();
     this->activeHttpsPort = 0;
 }
@@ -211,6 +215,19 @@ NvComputer::NvComputer(NvHTTP& http, QString serverInfo)
     this->state = NvComputer::CS_ONLINE;
     this->pendingQuit = false;
     this->isSupportedServerVersion = CompatFetcher::isGfeVersionSupported(this->gfeVersion);
+
+    const QString permissionValue = NvHTTP::getXmlString(serverInfo, "Permission");
+    bool permissionsOk = false;
+    this->serverPermissions = ServerPermissions::parse(permissionValue, &permissionsOk);
+    this->serverPermissionsAvailable = !permissionValue.isEmpty() && permissionsOk;
+    if (!permissionsOk) {
+        this->serverPermissions = 0;
+    }
+    this->serverCommands = NvHTTP::getXmlStringList(serverInfo, "ServerCommand");
+    const QString virtualDisplayValue =
+            NvHTTP::getXmlString(serverInfo, "VirtualDisplayCapable").trimmed();
+    this->virtualDisplayCapable = virtualDisplayValue == "1" ||
+            virtualDisplayValue.compare(QStringLiteral("true"), Qt::CaseInsensitive) == 0;
 }
 
 bool NvComputer::wake() const
@@ -569,6 +586,10 @@ bool NvComputer::update(const NvComputer& that)
     ASSIGN_IF_CHANGED(isNvidiaServerSoftware);
     ASSIGN_IF_CHANGED(maxLumaPixelsHEVC);
     ASSIGN_IF_CHANGED(gpuModel);
+    ASSIGN_IF_CHANGED(serverPermissionsAvailable);
+    ASSIGN_IF_CHANGED(serverPermissions);
+    ASSIGN_IF_CHANGED(serverCommands);
+    ASSIGN_IF_CHANGED(virtualDisplayCapable);
     ASSIGN_IF_CHANGED_AND_NONNULL(serverCert);
     ASSIGN_IF_CHANGED_AND_NONEMPTY(displayModes);
 

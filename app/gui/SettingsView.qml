@@ -1475,6 +1475,40 @@ Flickable {
                         StreamingPreferences.reverseScrollDirection = checked
                     }
                 }
+
+                CheckBox {
+                    id: clipboardSyncCheck
+                    hoverEnabled: true
+                    width: parent.width
+                    text: qsTr("Enable clipboard synchronization")
+                    font.pointSize: 12
+                    checked: StreamingPreferences.clipboardSync
+                    onCheckedChanged: {
+                        StreamingPreferences.clipboardSync = checked
+                    }
+
+                    ToolTip.delay: 1000
+                    ToolTip.timeout: 10000
+                    ToolTip.visible: hovered
+                    ToolTip.text: qsTr("Synchronizes plain text with Apollo/Vibepollo while streaming. The host controls client-to-host and host-to-client permissions separately. Clipboard content is limited to 1 MB.")
+                }
+
+                CheckBox {
+                    id: virtualDisplayCheck
+                    hoverEnabled: true
+                    width: parent.width
+                    text: qsTr("Use virtual display when starting a stream")
+                    font.pointSize: 12
+                    checked: StreamingPreferences.useVirtualDisplay
+                    onCheckedChanged: {
+                        StreamingPreferences.useVirtualDisplay = checked
+                    }
+
+                    ToolTip.delay: 1000
+                    ToolTip.timeout: 10000
+                    ToolTip.visible: hovered
+                    ToolTip.text: qsTr("Requests an Apollo/Vibepollo virtual display. This setting is ignored when the host does not advertise virtual display support.")
+                }
             }
         }
 
