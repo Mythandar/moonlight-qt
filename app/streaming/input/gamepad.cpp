@@ -402,9 +402,20 @@ void SdlInputHandler::handleControllerButtonEvent(SDL_ControllerButtonEvent* eve
 
         Session::get()->toggleQuickMenu();
 
+        // Mouse emulation sends shoulder presses as X1/X2 mouse buttons before
+        // the full chord is known. The menu consumes the matching releases, so
+        // release them explicitly to prevent a stuck host-side mouse button.
+        if (state->mouseEmulationTimer != 0) {
+            LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_X1);
+            LiSendMouseButtonEvent(BUTTON_ACTION_RELEASE, BUTTON_X2);
+        }
+
         // The menu consumes subsequent button releases, so clear our local
-        // state too or the shortcut buttons would remain logically pressed.
+        // state too or shortcut inputs could be restored after the menu closes.
         state->buttons = 0;
+        state->lt = state->rt = 0;
+        state->lsX = state->lsY = 0;
+        state->rsX = state->rsY = 0;
         LiSendMultiControllerEvent(state->index, m_GamepadMask,
                                    0, 0, 0, 0, 0, 0, 0);
         return;
