@@ -1559,9 +1559,9 @@ void Session::toggleFullscreen()
     SDL_SetWindowFullscreen(m_Window, fullScreen ? m_FullScreenFlag : 0);
 
     // Use captured relative mouse input in full-screen mode and seamless
-    // absolute mouse input in windowed mode. This mirrors the modes selected
-    // by the mouse mode shortcut without relying on its current toggle state.
-    m_InputHandler->setAbsoluteMouseMode(!fullScreen);
+    // absolute mouse input in windowed mode until the user manually overrides
+    // the mode. Desktop Mouse Mode always takes precedence over this policy.
+    m_InputHandler->updateMouseModeForFullscreen(fullScreen);
 
 #ifdef Q_OS_DARWIN
     // SDL on macOS has a bug that causes the window size to be reset to crazy
@@ -1796,7 +1796,7 @@ void Session::start()
 
     // Initialize the gamepad code with our preferences
     // NB: m_InputHandler must be initialize before starting the connection.
-    m_InputHandler = new SdlInputHandler(*m_Preferences, m_StreamConfig.width, m_StreamConfig.height);
+    m_InputHandler = new SdlInputHandler(*m_Preferences, m_StreamConfig.width, m_StreamConfig.height, m_IsFullScreen);
 
     // Kick off the async connection thread then return to the caller to pump the event loop
     auto thread = new AsyncConnectionStartThread(this);

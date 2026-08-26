@@ -84,7 +84,7 @@ struct DualSenseOutputReport{
 class SdlInputHandler
 {
 public:
-    explicit SdlInputHandler(StreamingPreferences& prefs, int streamWidth, int streamHeight);
+    explicit SdlInputHandler(StreamingPreferences& prefs, int streamWidth, int streamHeight, bool initialFullScreen);
 
     ~SdlInputHandler();
 
@@ -147,6 +147,8 @@ public:
     void setCaptureActive(bool active);
 
     void setAbsoluteMouseMode(bool absoluteMouseMode);
+
+    void updateMouseModeForFullscreen(bool fullScreen);
 
     void toggleCaptureActive();
 
@@ -246,6 +248,8 @@ private:
     SDL_TimerID m_LongPressTimer;
     int m_StreamWidth;
     int m_StreamHeight;
+    bool m_DesktopMouseMode;
+    bool m_MouseModeToggledByUser;
     bool m_AbsoluteMouseMode;
     bool m_AbsoluteTouchMode;
     bool m_DisabledTouchFeedback;

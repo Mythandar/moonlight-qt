@@ -58,6 +58,10 @@ void SdlInputHandler::performSpecialKeyCombo(KeyCombo combo)
         SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
                     "Detected mouse mode toggle combo");
 
+        // Manual mouse mode changes take precedence over automatic mode changes
+        // during subsequent windowed/fullscreen transitions in this session.
+        m_MouseModeToggledByUser = true;
+
         // Toggle mouse mode
         setAbsoluteMouseMode(!m_AbsoluteMouseMode);
         break;

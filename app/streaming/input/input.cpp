@@ -9,7 +9,7 @@
 #include <QDir>
 #include <QGuiApplication>
 
-SdlInputHandler::SdlInputHandler(StreamingPreferences& prefs, int streamWidth, int streamHeight)
+SdlInputHandler::SdlInputHandler(StreamingPreferences& prefs, int streamWidth, int streamHeight, bool initialFullScreen)
     : m_MultiController(prefs.multiController),
       m_GamepadMouse(prefs.gamepadMouse),
       m_SwapMouseButtons(prefs.swapMouseButtons),
@@ -26,7 +26,9 @@ SdlInputHandler::SdlInputHandler(StreamingPreferences& prefs, int streamWidth, i
       m_LongPressTimer(0),
       m_StreamWidth(streamWidth),
       m_StreamHeight(streamHeight),
-      m_AbsoluteMouseMode(prefs.absoluteMouseMode),
+      m_DesktopMouseMode(prefs.absoluteMouseMode),
+      m_MouseModeToggledByUser(false),
+      m_AbsoluteMouseMode(prefs.absoluteMouseMode || !initialFullScreen),
       m_AbsoluteTouchMode(prefs.absoluteTouchMode),
       m_DisabledTouchFeedback(false),
       m_LeftButtonReleaseTimer(0),
@@ -455,6 +457,16 @@ void SdlInputHandler::setAbsoluteMouseMode(bool absoluteMouseMode)
     setCaptureActive(false);
     m_AbsoluteMouseMode = absoluteMouseMode;
     setCaptureActive(true);
+}
+
+void SdlInputHandler::updateMouseModeForFullscreen(bool fullScreen)
+{
+    // Desktop Mouse Mode takes precedence over automatic fullscreen capture.
+    // Once the user toggles the mouse mode manually, preserve that choice for
+    // the rest of this input handler's streaming session.
+    if (!m_DesktopMouseMode && !m_MouseModeToggledByUser) {
+        setAbsoluteMouseMode(!fullScreen);
+    }
 }
 
 void SdlInputHandler::handleTouchFingerEvent(SDL_TouchFingerEvent* event)
