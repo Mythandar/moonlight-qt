@@ -280,20 +280,20 @@ rem and should not be harvested for inclusion in the full installer
 copy "%VC_REDIST_DLL_PATH%\*.dll" %DEPLOY_FOLDER%
 if !ERRORLEVEL! NEQ 0 goto Error
 
-rem Since we don't publish Windows installers for CI builds, let's use the user profile
-rem location of the regular non-portable version by default. We'll place a file in the
-rem the package to allow the user to rename if they want portable behavior.
-if defined CI_VERSION (
-    echo. > %DEPLOY_FOLDER%\portable.dat.inactive
-    if !ERRORLEVEL! NEQ 0 goto Error
-) else (
-    rem This file tells Moonlight that it's a portable installation
-    echo. > %DEPLOY_FOLDER%\portable.dat
-    if !ERRORLEVEL! NEQ 0 goto Error
-)
-
-7z a %INSTALLER_FOLDER%\MoonlightPortable-%ARCH%-%VERSION%.zip %DEPLOY_FOLDER%\*
+rem Keep local deployment builds on the regular user-profile settings so rebuilding
+rem doesn't replace the client identity. Activate portable mode only while packaging.
+echo. > %DEPLOY_FOLDER%\portable.dat.inactive
 if !ERRORLEVEL! NEQ 0 goto Error
+move /Y %DEPLOY_FOLDER%\portable.dat.inactive %DEPLOY_FOLDER%\portable.dat
+if !ERRORLEVEL! NEQ 0 goto Error
+7z a %INSTALLER_FOLDER%\MoonlightPortable-%ARCH%-%VERSION%.zip %DEPLOY_FOLDER%\*
+set PORTABLE_ZIP_ERROR=!ERRORLEVEL!
+move /Y %DEPLOY_FOLDER%\portable.dat %DEPLOY_FOLDER%\portable.dat.inactive
+if !ERRORLEVEL! NEQ 0 goto Error
+if !PORTABLE_ZIP_ERROR! NEQ 0 (
+    echo Portable package creation failed!
+    exit /b !PORTABLE_ZIP_ERROR!
+)
 
 echo Build successful for Moonlight v%VERSION% %ARCH% binaries!
 exit /b 0

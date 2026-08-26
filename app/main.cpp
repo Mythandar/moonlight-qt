@@ -13,6 +13,7 @@
 #include <QElapsedTimer>
 #include <QTemporaryFile>
 #include <QRegularExpression>
+#include <QFileInfo>
 
 #ifdef Q_OS_UNIX
 #include <sys/socket.h>
@@ -432,11 +433,8 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("moonlight-stream.com");
     QCoreApplication::setApplicationName("Moonlight");
 
-    if (QFile(QDir::currentPath() + "/portable.dat").exists()) {
-        QSettings::setDefaultFormat(QSettings::IniFormat);
-        QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, QDir::currentPath());
-        QSettings::setPath(QSettings::IniFormat, QSettings::SystemScope, QDir::currentPath());
-
+    const QString startupApplicationDirPath = QFileInfo(QFile::decodeName(argv[0])).absolutePath();
+    if (QFile(QDir(startupApplicationDirPath).filePath("portable.dat")).exists()) {
         // Initialize paths for portable mode
         Path::initialize(true);
     }
@@ -754,6 +752,13 @@ int main(int argc, char *argv[])
     }
 
     QGuiApplication app(argc, argv);
+
+    const QString applicationDirPath = QCoreApplication::applicationDirPath();
+    if (QFile(QDir(applicationDirPath).filePath("portable.dat")).exists()) {
+        QSettings::setDefaultFormat(QSettings::IniFormat);
+        QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, applicationDirPath);
+        QSettings::setPath(QSettings::IniFormat, QSettings::SystemScope, applicationDirPath);
+    }
 
 #ifdef Q_OS_DARWIN
     // macOS defaults "Keyboard navigation" to text fields and lists only, which
