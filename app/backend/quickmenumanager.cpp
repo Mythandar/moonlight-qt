@@ -62,7 +62,6 @@ bool QuickMenuManager::handleEvent(const SDL_Event& event)
 
         if (key == SDLK_BACKSLASH &&
                 (modifiers & KMOD_CTRL) &&
-                (modifiers & KMOD_ALT) &&
                 (modifiers & KMOD_SHIFT)) {
             hide();
         }
